@@ -1,0 +1,2 @@
+[build]
+functions = "automated_worker"

@@ -14,11 +14,10 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-
-function try_play(){
+exports.handler = async function(event, context) {
 
     setInterval(function(){
-       const send = new MsgExecuteContract(
+        const send = new MsgExecuteContract(
             mk.accAddress,
             process.env.LOTERRA_CONTRACT,
             {
@@ -36,5 +35,3 @@ function try_play(){
             }).catch(err => console.log(err));
     }, 60000);
 }
-
-try_play()
