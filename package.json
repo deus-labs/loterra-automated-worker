@@ -1,0 +1,14 @@
+{
+  "name": "loterra-automated-worker",
+  "version": "1.0.0",
+  "description": "Automated worker for LoTerra",
+  "main": "index.js",
+  "repository": "https://github.com/LoTerra",
+  "author": "0xantman",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@terra-money/terra.js": "^1.4.2",
+    "dotenv": "^8.2.0"
+  }
+}
