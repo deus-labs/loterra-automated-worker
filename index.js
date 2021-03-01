@@ -14,7 +14,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-exports.handler = async function(event, context) {
+function worker() {
 
     setInterval(function(){
         const send = new MsgExecuteContract(
@@ -35,3 +35,4 @@ exports.handler = async function(event, context) {
             }).catch(err => console.log(err));
     }, 60000);
 }
+worker()
