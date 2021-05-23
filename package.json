@@ -9,6 +9,7 @@
   "private": false,
   "dependencies": {
     "@terra-money/terra.js": "^1.4.2",
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0"
   }
 }
