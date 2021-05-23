@@ -53,7 +53,7 @@ function worker() {
         wallet
             .createAndSignTx({
                 msgs: [msg, msg1],
-                memo: 'test from terra.js!',
+                memo: 'Automated worker!',
                 fee: new StdFee(7_000_000, { uusd: 2000000 })
             })
             .then(tx => terra.tx.broadcast(tx))
