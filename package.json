@@ -10,6 +10,7 @@
   "dependencies": {
     "@terra-money/terra.js": "^1.4.2",
     "axios": "^0.21.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "fs": "^0.0.1-security"
   }
 }

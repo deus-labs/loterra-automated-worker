@@ -2,10 +2,12 @@ require('dotenv').config()
 const {
     LCDClient,
     MsgExecuteContract,
-    MnemonicKey
+    MnemonicKey,
+    StdFee,
+    BankAPI
 } = require('@terra-money/terra.js')
 const axios = require("axios")
-
+const fs = require('fs');
 const mk = new MnemonicKey({
     mnemonic:
     process.env.MNEMONIC,
@@ -19,6 +21,12 @@ const wallet = terra.wallet(mk)
 function worker() {
 
     setInterval(async function(){
+        const bank = new BankAPI(terra.apiRequester)
+        const balance = await bank.balance(
+            process.env.LOTERRA_CONTRACT
+        )
+        fs.appendFileSync('info.txt',new Date() +' ' + balance.toString() + '\n')
+
         let _round
         let signature_base64
         let previous_signature_base64
