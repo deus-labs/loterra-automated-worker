@@ -31,7 +31,7 @@ function worker() {
             winners = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
                 {
-                    players: {winner: config.lottery_counter - 1},
+                    winners: {lottery_id: config.lottery_counter - 1},
                 },
             );
             players = await terra.wasm.contractQuery(
