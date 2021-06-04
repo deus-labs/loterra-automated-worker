@@ -54,7 +54,7 @@ function worker() {
                     msgs: [msg],
                     memo: 'Automated claim worker!',
                     gasPrices: fees.gasPrices(),
-                    gasAdjustment: 1.1,
+                    gasAdjustment: 1.5,
                 })
                 .then(tx => terra.tx.broadcast(tx))
                 .then(result => {
@@ -71,7 +71,7 @@ function worker() {
                     msgs: [msg],
                     memo: 'Automated collect worker!',
                     gasPrices: fees.gasPrices(),
-                    gasAdjustment: 1.1,
+                    gasAdjustment: 1.5,
                 })
                 .then(tx => terra.tx.broadcast(tx))
                 .then(result => {
