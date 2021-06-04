@@ -14,7 +14,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-const fees = new StdFee(10_000_000, { uusd: 200000 })
+const fees = new StdFee(1_000_000, { uusd: 200000 })
 function worker() {
 
     setInterval(async function(){
