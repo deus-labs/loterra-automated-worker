@@ -14,7 +14,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-const fees = new StdFee(10_000_000, { uusd: 2000000 })
+const fees = new StdFee(10_000_000, { uusd: 200000 })
 function worker() {
 
     setInterval(async function(){
@@ -44,7 +44,7 @@ function worker() {
         } catch (e) {
             console.log(e)
         }
-
+        console.log(players)
         players.forEach(player =>{
             let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 claim:{ addresses:[player]}
@@ -61,8 +61,8 @@ function worker() {
                     console.log(`TX hash: ${result.txhash}`);
                 }).catch(e => console.log(e));
         })
-
-        winners.forEach(winner => {
+        console.log(winners)
+        winners.winners.forEach(winner => {
             let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 collect:{ address: winner.address}
             })
@@ -79,6 +79,6 @@ function worker() {
                 }).catch(e => console.log(e));
         })
 
-    }, 60000);
+    }, 360000);
 }
 worker()
