@@ -79,6 +79,6 @@ function worker() {
                 }).catch(e => console.log(e));
         })
 
-    }, 60000);
+    }, 360000);
 }
 worker()
