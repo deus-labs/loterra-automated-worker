@@ -15,6 +15,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
+const fees = new StdFee(1_000_000, { uusd: 200000 })
 
 function worker() {
 
@@ -52,14 +53,27 @@ function worker() {
 
         wallet
             .createAndSignTx({
-                msgs: [msg, msg1],
-                memo: 'Automated worker!',
+                msgs: [msg],
+                memo: 'Automated worker add randomness!',
                 fee: new StdFee(7_000_000, { uusd: 2000000 })
             })
             .then(tx => terra.tx.broadcast(tx))
             .then(result => {
                 console.log(`TX hash: ${result.txhash}`);
             }).catch(e => console.log(e));
+
+        wallet
+            .createAndSignTx({
+                msgs: [msg1],
+                memo: 'Automated worker play!',
+                gasPrices: fees.gasPrices(),
+                gasAdjustment: 1.5,
+            })
+            .then(tx => terra.tx.broadcast(tx))
+            .then(result => {
+                console.log(`TX hash: ${result.txhash}`);
+            }).catch(e => console.log(e));
+
     }, 60000);
 }
 worker()
