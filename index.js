@@ -20,6 +20,21 @@ const fees = new StdFee(1_000_000, { uusd: 200000 })
 function worker() {
 
     setInterval(async function(){
+        const msg1 = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
+            play: {}
+        })
+
+        wallet
+            .createAndSignTx({
+                msgs: [msg1],
+                memo: 'Automated worker play!',
+                gasPrices: fees.gasPrices(),
+                gasAdjustment: 1.5,
+            })
+            .then(tx => terra.tx.broadcast(tx))
+            .then(result => {
+                console.log(`TX hash: ${result.txhash}`);
+            }).catch(e => console.log(e));
         try {
             let res = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
@@ -55,22 +70,6 @@ function worker() {
         } catch (e) {
             console.log(e)
         }
-
-        const msg1 = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
-            play: {}
-        })
-
-        wallet
-            .createAndSignTx({
-                msgs: [msg1],
-                memo: 'Automated worker play!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
-            })
-            .then(tx => terra.tx.broadcast(tx))
-            .then(result => {
-                console.log(`TX hash: ${result.txhash}`);
-            }).catch(e => console.log(e));
 
     }, 60000);
 }
