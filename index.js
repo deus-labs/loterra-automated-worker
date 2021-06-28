@@ -20,55 +20,70 @@ const fees = new StdFee(1_000_000, { uusd: 200000 })
 function worker() {
 
     setInterval(async function(){
-        const msg1 = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
-            play: {}
-        })
-
-        wallet
-            .createAndSignTx({
-                msgs: [msg1],
-                memo: 'Automated worker play!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
-            })
-            .then(tx => terra.tx.broadcast(tx))
-            .then(result => {
-                console.log(`TX hash: ${result.txhash}`);
-            }).catch(e => console.log(e));
+        let resRound;
         try {
-            let res = await terra.wasm.contractQuery(
+            resRound = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
                 {
                     get_round: {},
                 },
             );
-            const res2 = await axios.get(`https://drand.cloudflare.com/public/${res.next_round}`)
-            const {round, signature, previous_signature} = res2.data
-            let _round = round
-            let signature_base64 = Buffer.from(signature, 'hex').toString('base64')
-            let previous_signature_base64 = Buffer.from(previous_signature, 'hex').toString('base64')
+            await terra.wasm.contractQuery(
+                process.env.TERRAND_CONTRACT,
+                {
+                    get_randomness: { round: resRound.next_round }
+                },
+            );
 
-            const msg = new MsgExecuteContract(mk.accAddress, process.env.TERRAND_CONTRACT, {
-                drand:{
-                    round: _round,
-                    previous_signature: previous_signature_base64,
-                    signature: signature_base64
-                }
+        } catch (e) {
+            console.log("yep")
+            try {
+
+                const res2 = await axios.get(`https://drand.cloudflare.com/public/${resRound.next_round}`)
+                const {round, signature, previous_signature} = res2.data
+                let _round = round
+                let signature_base64 = Buffer.from(signature, 'hex').toString('base64')
+                let previous_signature_base64 = Buffer.from(previous_signature, 'hex').toString('base64')
+
+                const msg = new MsgExecuteContract(mk.accAddress, process.env.TERRAND_CONTRACT, {
+                    drand: {
+                        round: _round,
+                        previous_signature: previous_signature_base64,
+                        signature: signature_base64
+                    }
+                })
+
+                wallet
+                    .createAndSignTx({
+                        msgs: [msg],
+                        memo: 'Automated worker add randomness!',
+                        fee: new StdFee(7_000_000, {uusd: 2000000})
+                    })
+                    .then(tx => terra.tx.broadcast(tx))
+                    .then(result => {
+                        console.log(`TX hash: ${result.txhash}`);
+                    }).catch(e => console.log(e));
+
+            }
+            catch (e){
+                console.log(e)
+            }
+        } finally {
+            const msg1 = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
+                play: {}
             })
 
             wallet
                 .createAndSignTx({
-                    msgs: [msg],
-                    memo: 'Automated worker add randomness!',
-                    fee: new StdFee(7_000_000, { uusd: 2000000 })
+                    msgs: [msg1],
+                    memo: 'Automated worker play!',
+                    gasPrices: fees.gasPrices(),
+                    gasAdjustment: 1.5,
                 })
                 .then(tx => terra.tx.broadcast(tx))
                 .then(result => {
                     console.log(`TX hash: ${result.txhash}`);
                 }).catch(e => console.log(e));
-
-        } catch (e) {
-            console.log(e)
         }
 
     }, 60000);
