@@ -45,36 +45,39 @@ function worker() {
             console.log(e)
         }
         console.log(players)
+        let msgs_one = [];
         players.forEach(player =>{
             let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 claim:{ addresses:[player]}
             })
-            wallet
-                .createAndSignTx({
-                    msgs: [msg],
-                    memo: 'Automated claim worker!',
-                    gasPrices: fees.gasPrices(),
-                    gasAdjustment: 1.5,
-                })
-                .then(tx => terra.tx.broadcast(tx))
-                .then(result => {
-                    console.log(`TX hash: ${result.txhash}`);
-                }).catch(e => console.log(e));
+            msgs_one.push(msg)
+
         })
         console.log(winners)
-        let msgs = [];
+        let msgs_two = [];
         winners.winners.forEach(winner => {
             if (!winner.claims.claimed) {
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
-                msgs.push(msg)
+                msgs_two.push(msg)
             }
         })
+        wallet
+            .createAndSignTx({
+                msgs: [msgs_one],
+                memo: 'Automated claim worker!',
+                gasPrices: fees.gasPrices(),
+                gasAdjustment: 1.5,
+            })
+            .then(tx => terra.tx.broadcast(tx))
+            .then(result => {
+                console.log(`TX hash: ${result.txhash}`);
+            }).catch(e => console.log(e));
 
         wallet
             .createAndSignTx({
-                msgs: [msgs],
+                msgs: [msgs_two],
                 memo: 'Automated collect worker!',
                 gasPrices: fees.gasPrices(),
                 gasAdjustment: 1.5,
@@ -84,6 +87,6 @@ function worker() {
                 console.log(`TX hash: ${result.txhash}`);
             }).catch(e => console.log(e));
 
-    }, 60000);
+    }, 300000);
 }
 worker()
