@@ -64,29 +64,29 @@ function worker() {
 
         })
         console.log(winners)
-        let msgs_two = [];
+
         winners.winners.forEach(winner => {
             if (!winner.claims.claimed) {
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
-                msgs_two.push(msg)
+                wallet
+                    .createAndSignTx({
+                        msgs: [msg],
+                        memo: 'Automated collect worker!',
+                        gasPrices: fees.gasPrices(),
+                        gasAdjustment: 1.5,
+                    })
+                    .then(tx => terra.tx.broadcast(tx))
+                    .then(result => {
+                        console.log(`TX hash: ${result.txhash}`);
+                    }).catch(e => console.log(e));
             }
         })
 
 
 
-        wallet
-            .createAndSignTx({
-                msgs: [msgs_two],
-                memo: 'Automated collect worker!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
-            })
-            .then(tx => terra.tx.broadcast(tx))
-            .then(result => {
-                console.log(`TX hash: ${result.txhash}`);
-            }).catch(e => console.log(e));
+
 
     }, 300000);
 }
