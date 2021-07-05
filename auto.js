@@ -38,21 +38,25 @@ function worker() {
         }
 
         winners.winners.forEach(winner => {
-            if (!winner.claims.claimed) {
+            if (winner.claims.claimed == false) {
+                console.log(winner.address)
+                console.log()
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
-                wallet
-                    .createAndSignTx({
-                        msgs: [msg],
-                        memo: 'Automated collect worker!',
-                        gasPrices: fees.gasPrices(),
-                        gasAdjustment: 1.5,
-                    })
-                    .then(tx => terra.tx.broadcast(tx))
-                    .then(result => {
-                        console.log(`TX hash: ${result.txhash}`);
-                    }).catch(e => console.log(e));
+                setInterval(async function(){
+                    wallet
+                        .createAndSignTx({
+                            msgs: [msg],
+                            memo: 'Automated collect worker!',
+                            gasPrices: fees.gasPrices(),
+                            gasAdjustment: 1.5,
+                        })
+                        .then(tx => terra.tx.broadcast(tx))
+                        .then(result => {
+                            console.log(`TX hash: ${result.txhash}`);
+                        }).catch(e => console.log(e));
+                }, 10000)
             }
         })
         //let msgs_one = [];
@@ -85,17 +89,19 @@ function worker() {
             let msgs_one = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 claim:{ addresses:[player]}
             })
-            wallet
-                .createAndSignTx({
-                    msgs: [msgs_one],
-                    memo: 'Automated claim worker!',
-                    gasPrices: fees.gasPrices(),
-                    gasAdjustment: 1.5,
-                })
-                .then(tx => terra.tx.broadcast(tx))
-                .then(result => {
-                    console.log(`TX hash: ${result.txhash}`);
-                }).catch(e => console.log(e));
+            setInterval(async function(){
+                wallet
+                    .createAndSignTx({
+                        msgs: [msgs_one],
+                        memo: 'Automated claim worker!',
+                        gasPrices: fees.gasPrices(),
+                        gasAdjustment: 1.5,
+                    })
+                    .then(tx => terra.tx.broadcast(tx))
+                    .then(result => {
+                        console.log(`TX hash: ${result.txhash}`);
+                    }).catch(e => console.log(e));
+            }, 10000)
 
         })
         console.log(players)
