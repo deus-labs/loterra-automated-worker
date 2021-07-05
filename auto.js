@@ -40,7 +40,6 @@ function worker() {
         winners.winners.forEach(winner => {
             if (winner.claims.claimed == false) {
                 console.log(winner.address)
-                console.log()
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
