@@ -50,7 +50,14 @@ function worker() {
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
-                let winner_interval = setInterval(async function(){
+                wallet.createAndSignTx({
+                    msgs: [msg],
+                    memo: 'Automated collect worker!',
+                    gasPrices: fees.gasPrices(),
+                    gasAdjustment: 1.5,
+                }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err))
+
+                /*let winner_interval = setInterval(async function(){
                     let tx = await wallet.createAndSignTx({
                         msgs: [msg],
                         memo: 'Automated collect worker!',
@@ -63,7 +70,7 @@ function worker() {
                 // clear interval
                 if (winner.address == winners.winners[winners.winners.length - 1].address) {
                     clearInterval(winner_interval);
-                }
+                }*/
             }
         })
 
@@ -71,7 +78,13 @@ function worker() {
             let msgs_one = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 claim:{ addresses:[player]}
             })
-            let play_interval = setInterval(async function(){
+            wallet.createAndSignTx({
+                msgs: [msgs_one],
+                memo: 'Automated claim worker!',
+                gasPrices: fees.gasPrices(),
+                gasAdjustment: 1.5,
+            }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err))
+            /*let play_interval = setInterval(async function(){
                 try {
                     let tx = await wallet.createAndSignTx({
                         msgs: [msgs_one],
@@ -88,7 +101,7 @@ function worker() {
             // clear interval
             if (player == players[players.length - 1]) {
                 clearInterval(play_interval);
-            }
+            } */
         })
         //let msgs_one = [];
     }, 300000);
