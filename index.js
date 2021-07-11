@@ -23,8 +23,7 @@ function worker() {
         const msg1 = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
             play: {}
         })
-
-        try {
+        try{
             // Play
             let tx_play = await wallet.createAndSignTx({
                 msgs: [msg1],
@@ -33,6 +32,11 @@ function worker() {
                 gasAdjustment: 1.5,
             });
             await terra.tx.broadcast(tx_play)
+        }catch (e) {
+            console.log(e)
+        }
+
+        try {
 
             let res = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
