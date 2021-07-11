@@ -50,7 +50,7 @@ function worker() {
                 let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                     collect: {address: winner.address}
                 })
-                setInterval(async function(){
+                let winner_interval = setInterval(async function(){
                     let tx = await wallet.createAndSignTx({
                         msgs: [msg],
                         memo: 'Automated collect worker!',
@@ -60,6 +60,10 @@ function worker() {
                     await terra.tx.broadcast(tx)
 
                 }, 10000)
+                // clear interval
+                if (winner.address == winners.winners[winners.winners.length - 1].address) {
+                    clearInterval(winner_interval);
+                }
             }
         })
 
@@ -67,7 +71,7 @@ function worker() {
             let msgs_one = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
                 claim:{ addresses:[player]}
             })
-            setInterval(async function(){
+            let play_interval = setInterval(async function(){
                 try {
                     let tx = await wallet.createAndSignTx({
                         msgs: [msgs_one],
@@ -76,11 +80,15 @@ function worker() {
                         gasAdjustment: 1.5,
                     })
                     await terra.tx.broadcast(tx)
+
                 }catch (e) {
                     console.log(e)
                 }
             }, 10000)
-
+            // clear interval
+            if (player == players[players.length - 1]) {
+                clearInterval(play_interval);
+            }
         })
         //let msgs_one = [];
     }, 300000);
