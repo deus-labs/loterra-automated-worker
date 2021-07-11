@@ -26,12 +26,13 @@ function worker() {
 
         try {
             // Play
-            await wallet.createAndSignTx({
+            let tx_play = await wallet.createAndSignTx({
                 msgs: [msg1],
                 memo: 'Automated worker play!',
                 gasPrices: fees.gasPrices(),
                 gasAdjustment: 1.5,
             });
+            await terra.tx.broadcast(tx_play)
 
             let res = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
@@ -53,11 +54,12 @@ function worker() {
                 }
             })
             // Add randomness
-            await wallet.createAndSignTx({
+            let tx_random = await wallet.createAndSignTx({
                 msgs: [msg],
                 memo: 'Automated worker add randomness!',
                 fee: new StdFee(7_000_000, { uusd: 2000000 })
             })
+            await terra.tx.broadcast(tx_random)
 
         } catch (e) {
             console.log(e)

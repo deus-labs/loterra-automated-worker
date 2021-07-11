@@ -44,17 +44,14 @@ function worker() {
                     collect: {address: winner.address}
                 })
                 setInterval(async function(){
-                    wallet
-                        .createAndSignTx({
-                            msgs: [msg],
-                            memo: 'Automated collect worker!',
-                            gasPrices: fees.gasPrices(),
-                            gasAdjustment: 1.5,
-                        })
-                        .then(tx => terra.tx.broadcast(tx))
-                        .then(result => {
-                            console.log(`TX hash: ${result.txhash}`);
-                        }).catch(e => console.log(e));
+                    let tx = await wallet.createAndSignTx({
+                        msgs: [msg],
+                        memo: 'Automated collect worker!',
+                        gasPrices: fees.gasPrices(),
+                        gasAdjustment: 1.5,
+                    })
+                    await terra.tx.broadcast(tx)
+
                 }, 10000)
             }
         })
@@ -89,17 +86,17 @@ function worker() {
                 claim:{ addresses:[player]}
             })
             setInterval(async function(){
-                wallet
-                    .createAndSignTx({
+                try {
+                    let tx = await wallet.createAndSignTx({
                         msgs: [msgs_one],
                         memo: 'Automated claim worker!',
                         gasPrices: fees.gasPrices(),
                         gasAdjustment: 1.5,
                     })
-                    .then(tx => terra.tx.broadcast(tx))
-                    .then(result => {
-                        console.log(`TX hash: ${result.txhash}`);
-                    }).catch(e => console.log(e));
+                    await terra.tx.broadcast(tx)
+                }catch (e) {
+                    console.log(e)
+                }
             }, 10000)
 
         })
