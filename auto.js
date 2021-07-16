@@ -14,7 +14,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-const fees = new StdFee(1_000_000, { uusd: 200000 })
+const fees = new StdFee(400_000, { uusd: 65000 })
 function worker() {
 
     setInterval(async function(){
@@ -53,8 +53,7 @@ function worker() {
                 wallet.createAndSignTx({
                     msgs: [msg],
                     memo: 'Automated collect worker!',
-                    gasPrices: fees.gasPrices(),
-                    gasAdjustment: 1.5,
+                    fee: fees,
                 }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err))
 
                 /*let winner_interval = setInterval(async function(){
@@ -81,8 +80,7 @@ function worker() {
             wallet.createAndSignTx({
                 msgs: [msgs_one],
                 memo: 'Automated claim worker!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
+                fee: fees,
             }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err))
             /*let play_interval = setInterval(async function(){
                 try {
