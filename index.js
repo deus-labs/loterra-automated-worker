@@ -15,8 +15,7 @@ const terra = new LCDClient({
     chainID: process.env.CHAIN_ID,
 })
 const wallet = terra.wallet(mk)
-const fees = new StdFee(1_000_000, { uusd: 200000 })
-
+const fees = new StdFee(400_000, { uusd: 65000 })
 function worker() {
 
     setInterval(async function(){
@@ -28,8 +27,7 @@ function worker() {
             let tx_play = await wallet.createAndSignTx({
                 msgs: [msg1],
                 memo: 'Automated worker play!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
+                fee: fees,
             });
             await terra.tx.broadcast(tx_play)
         }catch (e) {
