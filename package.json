@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@terra-money/terra.js": "^1.8.6",
+    "@terra-money/terra.js": "^1.8.8",
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "fs": "^0.0.1-security"

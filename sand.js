@@ -20,30 +20,133 @@ const mk = new MnemonicKey({
 }*/
 const terra = new LCDClient({
     URL: "https://bombay-lcd.terra.dev",
-    chainID: "bombay-0007",
+    chainID: "bombay-0008",
 })
+/*
+const terra = new LCDClient({
+    URL: "https://tequila-lcd.terra.dev",
+    chainID: "tequila-0004",
+})*/
 const wallet = terra.wallet(mk)
-const fees = new StdFee(1_000_000, { uusd: 200000 })
+const fees = new StdFee(500_000, { uusd: 20000000 })
 
 // terra136qygjmsusuutemwe65uwnxg7jfekzyrnzfhj9
 // terra19ltv8g7nltj5da4hex3nx3ahd8v9dzmm5kjshv
+
+// testnet contract = terra1fh2je8z4gajnvfm6xd80hqc3cpga0gsl396rls
+
+// ALTERED terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal
 async function sand() {
-    const msg1 = new MsgExecuteContract(mk.accAddress, "terra1hmyfk8dvg40vfd5a0auxjjn7p64dpgnze40zes", {
-        poll: {
-            description: "Trying poll for the fun your feedback is highly appreciated",
-            proposal: "PrizesPerRanks",
-            contract_address: "terra1tqgt7957h76fjvjp4s3yj3g937lcuzp6z2gl7m"
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra1jmr4ed6cfy7tcafaqh7ehhapq6uw2a7azfdkaw",
+        //"update_terraswap_address" :{"address":""}
+    {
+        "increase_allowance": {
+        "spender": "terra12p2qrf0jg3k98kp60mk3m64z7n3psahgexmhjk",
+            "amount": "100000000000000"
+    }
+    })*/
+    /*
+    {
+            "provide_liquidity": {
+                "assets": [
+                    {
+                        "info" : {
+                            "token": {
+                                "contract_addr": "terra10ua5mu4yn28t0rsr6u7awnml0t6cnt89qp6tdp"
+                            }
+                        },
+                        "amount": "100000000000000"
+                    },
+                    {
+                        "info" : {
+                            "native_token": {
+                                "denom": "uusd"
+                            }
+                        },
+                        "amount": "4000000000"
+                    }
+                ],
+                "slippage_tolerance": "1"
+            }
         }
-    }, {"uusd": "1000000"})
+     */
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra12p2qrf0jg3k98kp60mk3m64z7n3psahgexmhjk",{
+        "provide_liquidity": {
+            "assets": [
+                {
+                    "info" : {
+                        "token": {
+                            "contract_addr": "terra1les6rz5ktjf44lcv35tl0a3a9rvkux9gdlzces"
+                        }
+                    },
+                    "amount": "40000000000000"
+                },
+                {
+                    "info" : {
+                        "native_token": {
+                            "denom": "uusd"
+                        }
+                    },
+                    "amount": "79000000000"
+                }
+            ]
+        }
+
+    }, {"uusd": "24000000"})*/
+
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra10a2w37pwwqvyd8z6eefvzl4d7hak0c7mkm2w6w",{
+        "swap": {
+            "offer_asset": {
+                "info" : {
+                    "native_token": {
+                        "denom": "uusd"
+                    }
+                },
+                "amount": "1"
+            }
+        }
+    }, {"uusd": "1"})*/
+
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal",
+        {
+            "send": {
+                "contract": "terra10a2w37pwwqvyd8z6eefvzl4d7hak0c7mkm2w6w",
+                "amount": "10000000000",
+                "msg": "eyJzd2FwIjp7fX0="
+            }
+        }) */
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal",
+        {
+            "rebase": {
+            }
+        })*/
+    const msg1 = new MsgExecuteContract(mk.accAddress, "terra1nkjjjfejhlke9926sux0dqfja3qyfe6uzt8yhn",
+        {
+            "swap": {
+                "offer_asset": {
+                    "info" : {
+                        "native_token": {
+                            "denom": "uusd"
+                        }
+                    },
+                    "amount": "350000000"
+                }
+            }
+        }, {"uusd": "350000000"})
+
+/*
+{ "send": { "contract": "terra1nkjjjfejhlke9926sux0dqfja3qyfe6uzt8yhn", "amount": "1777638883463", "msg": "ewogICJ3aXRoZHJhd19saXF1aWRpdHkiOiB7fQp9" } }
+ */
     //let msg1 = new MsgGrantAuthorization(undefined, undefined, undefined, undefined)
     try {
         let tx_play = await wallet.createAndSignTx({
             msgs: [msg1],
-            memo: 'Automated worker play!',
-            gasPrices: fees.gasPrices(),
-            gasAdjustment: 1.5,
+            memo: 'Automated!',
+            fee: fees
         } );
-        await terra.tx.broadcast(tx_play)
+        //console.log(tx_play)
+        let tx = await terra.tx.broadcast(tx_play)
+        console.log(tx)
     }catch (e) {
         console.log(e)
     }
