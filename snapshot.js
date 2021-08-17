@@ -101,7 +101,7 @@ async function snapLota() {
         }
 
         console.log(accounts)
-
+        // This get balance of all user
         accounts.map( async (address, index) => {
             await sleep(1000*index)
             console.log('sleep balance ',address)       
@@ -118,6 +118,47 @@ async function snapLota() {
           
         })
         console.log(balances)
+        // This get balance of all unstaking pending to claims
+        accounts.map( async (address, index) => {
+            await sleep(1000*index)
+            console.log('sleep balance ',address)
+
+            try {
+                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22claims%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+            `)
+                let  pending_amount = 0
+                balance.data.result.claims.map(claim => {
+                    pending_amount += parseInt(claim.amount)
+                })
+                balances[index] += pending_amount
+            }
+            catch (e) {
+                console.log(e)
+            }
+
+        })
+
+        // This get balance of all staking account
+        accounts.map( async (address, index) => {
+            await sleep(1000*index)
+            console.log('sleep balance ',address)
+
+            try {
+                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+            `)
+                let  pending_amount = 0
+                balance.data.result.map(holder => {
+                    pending_amount += parseInt(holder.balance)
+                })
+                balances[index] += pending_amount
+            }
+            catch (e) {
+                console.log(e)
+            }
+
+        })
+
+        https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holders%22%3A%7B%22start_after%22%3A%22terra1prf5udt7kgcmdcmeq2qu844jnkxwvml9d2gj6c%22%2C%20%22limit%22%3A30%7D%7D
 
 
 
