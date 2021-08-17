@@ -169,7 +169,7 @@ async function snapLota() {
             console.log('sleep balance ',address)
 
             try {
-                let get_holder_lp_balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+                let get_holder_lp_balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22balance%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
                 let amount = (parseInt(get_holder_lp_balance.data.result.balance) / 1000000) * amount_of_lota_per_lp
                 lp_balances.push(amount)
