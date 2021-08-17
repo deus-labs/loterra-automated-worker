@@ -192,13 +192,16 @@ async function snapLota() {
             `)
                 let amount = (parseInt(get_holder_lp_balance.data.result.balance) / 1000000) * amount_of_lota_per_lp
                 lp_balances.push(amount)
-//Save row to csv 
-                await csvWriter.writeRecords({address: accounts[index],  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index], lp_balances: lp_balances[index]})
+                //Save row to csv 
+                console.log('write csv',accounts[index])
+                const record = [{address: accounts[index].toString(),  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index], lp_balances: lp_balances[index]}];
+                await csvWriter.writeRecords(record)
             }
             catch (e) {
                 console.log(e)
             }
-
+            
+           
         })
 
 
