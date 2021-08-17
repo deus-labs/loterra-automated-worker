@@ -1,6 +1,16 @@
 
 const axios = require("axios")
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+    path: 'records.csv',
+    header: [
+        {id: 'address', title: 'address'},
+        {id: 'balances', title: 'balances'},
+        {id: 'pending_claims', title: 'pending_claims'},
+        {id: 'staking_balances', title: 'staking_balances'}
+    ]
+});
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -152,10 +162,13 @@ async function snapLota() {
                     staking_balances.push(parseInt(holder.balance))
 
                 })
+                await csvWriter.writeRecords({address: accounts[index],  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index]})
+
             }
             catch (e) {
                 console.log(e)
             }
+ 
 
         })
 /*
