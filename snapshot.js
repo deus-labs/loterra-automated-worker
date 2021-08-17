@@ -1,5 +1,12 @@
 
 const axios = require("axios")
+
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
 async function snap(){
     try{
     const validators = await  axios.get("https://lcd.terra.dev/staking/validators?status=bonded&page=1&limit=150");
@@ -88,13 +95,19 @@ async function snapLota() {
             if (all_accounts.data.result.accounts.length < 30) {
                 loop = false
             }
-
+            console.log('sleep now');
+            await sleep(500);
+            console.log('sleep off')
         }
 
         console.log(accounts)
 
-        accounts.map(async (address, index) => {
-            try {
+        accounts.map( async (address, index) => {
+            await sleep(1000*index)
+            console.log('sleep balance ',address)       
+     
+            try {    
+               
                 let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22balance%22%3A%7B%20%22address%22%3A%22${address}%22%7D%7D
             `)
 
@@ -103,7 +116,7 @@ async function snapLota() {
             catch (e) {
               console.log(e)
             }
-
+          
         })
         console.log(balances)
 
@@ -152,3 +165,5 @@ async function snapLota() {
 
 // snap()
 snapLota()
+
+
