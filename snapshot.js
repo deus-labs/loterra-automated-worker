@@ -102,8 +102,8 @@ async function snapLota() {
                 all_accounts = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22all_accounts%22%3A%7B%20%22limit%22%3A30%7D%7D
             `)
             }else{
-                /*all_accounts = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22all_accounts%22%3A%7B%20%22start_after%22%3A%22${accounts.pop()}%22%2C%22limit%22%3A30%7D%7D
-            `)*/
+                all_accounts = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22all_accounts%22%3A%7B%20%22start_after%22%3A%22${accounts.pop()}%22%2C%22limit%22%3A30%7D%7D
+            `)
             }
 
             if (all_accounts.data.result.accounts) {
@@ -117,7 +117,6 @@ async function snapLota() {
             console.log('sleep now');
             await sleep(500);
             console.log('sleep off')
-            loop = false
         }
 
         console.log(accounts)
@@ -252,7 +251,7 @@ async function snapLota() {
     }
 }
 
-// snap()
-snapLota()
+ snap()
+//snapLota()
 
 
