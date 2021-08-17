@@ -76,6 +76,9 @@ async function snapLota() {
     try{
         let accounts = []
         let balances = []
+        let pending_claims = []
+        let staking_balances = []
+
         let loop = true
         while (loop) {
             let all_accounts
@@ -110,7 +113,7 @@ async function snapLota() {
                 let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22balance%22%3A%7B%20%22address%22%3A%22${address}%22%7D%7D
             `)
 
-                balances.push(balance.data.result.balance)
+                balances.push(parseInt(balance.data.result.balance))
             }
             catch (e) {
               console.log(e)
@@ -126,11 +129,10 @@ async function snapLota() {
             try {
                 let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22claims%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
-                let  pending_amount = 0
                 balance.data.result.claims.map(claim => {
-                    pending_amount += parseInt(claim.amount)
+                    pending_claims.push(parseInt(claim.amount))
                 })
-                balances[index] += pending_amount
+
             }
             catch (e) {
                 console.log(e)
@@ -146,6 +148,25 @@ async function snapLota() {
             try {
                 let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
+                balance.data.result.map(holder => {
+                    staking_balances.push(parseInt(holder.balance))
+
+                })
+            }
+            catch (e) {
+                console.log(e)
+            }
+
+        })
+/*
+        // This get balance of liquidity provided terraswap
+        accounts.map( async (address, index) => {
+            await sleep(1000*index)
+            console.log('sleep balance ',address)
+
+            try {
+                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22balance%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+            `)
                 let  pending_amount = 0
                 balance.data.result.map(holder => {
                     pending_amount += parseInt(holder.balance)
@@ -156,9 +177,9 @@ async function snapLota() {
                 console.log(e)
             }
 
-        })
+        }) */
 
-        https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holders%22%3A%7B%22start_after%22%3A%22terra1prf5udt7kgcmdcmeq2qu844jnkxwvml9d2gj6c%22%2C%20%22limit%22%3A30%7D%7D
+
 
 
 
