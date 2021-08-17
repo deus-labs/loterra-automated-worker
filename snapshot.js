@@ -194,7 +194,7 @@ async function snapLota() {
                 lp_balances.push(amount)
                 //Save row to csv 
                 console.log('write csv',accounts[index])
-                const record = [{address: accounts[index].toString(),  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index], lp_balances: lp_balances[index]}];
+                const record = [{address: accounts[index],  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index], lp_balances: lp_balances[index]}];
                 await csvWriter.writeRecords(record)
             }
             catch (e) {
