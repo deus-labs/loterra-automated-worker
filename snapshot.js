@@ -106,8 +106,7 @@ async function snapLota() {
             await sleep(1000*index)
             console.log('sleep balance ',address)       
      
-            try {    
-               
+            try {                   
                 let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr/store?query_msg=%7B%22balance%22%3A%7B%20%22address%22%3A%22${address}%22%7D%7D
             `)
 
