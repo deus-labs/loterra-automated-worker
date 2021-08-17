@@ -40,7 +40,7 @@ async function snap(){
     let balances = [];
     let f = validatorsAddresses.map(async (addr,index) => {
         const delegators = await axios.get(`https://lcd.terra.dev/staking/validators/${addr}/delegations`);
-        delegators.data.result.map(d => {
+        delegators.data.result.map( d => {
 
             if (addresses.includes(d.delegator_address)){
                 balances[addresses.indexOf(d.delegator_address)] += parseInt(d.balance.amount)
@@ -48,22 +48,23 @@ async function snap(){
                 addresses.push(d.delegator_address)
                 balances.push(parseInt(d.balance.amount))
             }
-
         })
-        const record = [{address: addresses[index],  balances: balances[index]}];
-        await lunaWriter.writeRecords(record)
+
     })
 
+
     let addressAndBalance = []
-    Promise.all(f).then((e)=>{
+    Promise.all(f).then(async (e)=>{
         for (let x = 0; x < addresses.length; x++){
             let data = {
                 addr: addresses[x],
                 bal: balances[x]
             }
             addressAndBalance.push(data)
-            
+            const record = [{address: addresses[x],  balances: balances[x]}];
+            await lunaWriter.writeRecords(record)
         }
+
         console.log(addressAndBalance)
         console.log("all staked")
         console.log(balances.reduce((a, b) => a + b, 0));
