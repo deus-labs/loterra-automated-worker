@@ -78,6 +78,7 @@ async function snapLota() {
         let balances = []
         let pending_claims = []
         let staking_balances = []
+        let lp_balances = []
 
         let loop = true
         while (loop) {
@@ -132,7 +133,6 @@ async function snapLota() {
                 balance.data.result.claims.map(claim => {
                     pending_claims.push(parseInt(claim.amount))
                 })
-
             }
             catch (e) {
                 console.log(e)
@@ -146,38 +146,39 @@ async function snapLota() {
             console.log('sleep balance ',address)
 
             try {
-                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+                let holder = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
-                balance.data.result.map(holder => {
-                    staking_balances.push(parseInt(holder.balance))
+                staking_balances.push(parseInt(holder.data.result.balance))
 
-                })
             }
             catch (e) {
                 console.log(e)
             }
 
         })
-/*
+
         // This get balance of liquidity provided terraswap
+        let pool = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1pn20mcwnmeyxf68vpt3cyel3n57qm9mp289jta/store?query_msg=%7B%22pool%22%3A%7B%7D%7D`)
+        let total_lota_pool = parseInt(pool.data.result.assets[0].amount)
+        let token_info = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22token_info%22%3A%7B%7D%7D`);
+        let total_lp_lota = parseInt(token_info.data.result.total_supply)
+        let amount_of_lota_per_lp = total_lota_pool / total_lp_lota
+
         accounts.map( async (address, index) => {
             await sleep(1000*index)
             console.log('sleep balance ',address)
 
             try {
-                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22balance%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+                let get_holder_lp_balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
-                let  pending_amount = 0
-                balance.data.result.map(holder => {
-                    pending_amount += parseInt(holder.balance)
-                })
-                balances[index] += pending_amount
+                let amount = (parseInt(get_holder_lp_balance.data.result.balance) / 1000000) * amount_of_lota_per_lp
+                lp_balances.push(amount)
             }
             catch (e) {
                 console.log(e)
             }
 
-        }) */
+        })
 
 
 
