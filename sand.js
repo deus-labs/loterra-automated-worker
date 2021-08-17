@@ -2,6 +2,7 @@ require('dotenv').config()
 const {
     LCDClient,
     MsgExecuteContract,
+    MsgInstantiateContract,
     MnemonicKey,
     StdFee,
     Coin,
@@ -19,8 +20,8 @@ const mk = new MnemonicKey({
     "fcd": "https://bombay-fcd.terra.dev"
 }*/
 const terra = new LCDClient({
-    URL: "https://bombay-lcd.terra.dev",
-    chainID: "bombay-0008",
+    URL: "https://tequila-lcd.terra.dev",
+    chainID: "tequila-0004",
 })
 /*
 const terra = new LCDClient({
@@ -37,6 +38,24 @@ const fees = new StdFee(500_000, { uusd: 20000000 })
 
 // ALTERED terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal
 async function sand() {
+    const msg1 = new MsgInstantiateContract( mk.accAddress, 7958,
+    {
+        "name": "altered",
+        "symbol": "ALTE",
+        "decimals": 6,
+        "initial_balances": [
+        {
+            "address": mk.accAddress,
+            "amount": "100000000000000"
+        }
+    ],
+        "rebase": 1624294565,
+        "rebase_every": 86400,
+        "rebase_damping": 10,
+        "rebase_damping_launch": 0,
+        "pair_address": "terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff"
+    }
+    , false, true)
     /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra1jmr4ed6cfy7tcafaqh7ehhapq6uw2a7azfdkaw",
         //"update_terraswap_address" :{"address":""}
     {
@@ -120,7 +139,7 @@ async function sand() {
             "rebase": {
             }
         })*/
-    const msg1 = new MsgExecuteContract(mk.accAddress, "terra1nkjjjfejhlke9926sux0dqfja3qyfe6uzt8yhn",
+    /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra1nkjjjfejhlke9926sux0dqfja3qyfe6uzt8yhn",
         {
             "swap": {
                 "offer_asset": {
@@ -133,7 +152,7 @@ async function sand() {
                 }
             }
         }, {"uusd": "350000000"})
-
+*/
 /*
 { "send": { "contract": "terra1nkjjjfejhlke9926sux0dqfja3qyfe6uzt8yhn", "amount": "1777638883463", "msg": "ewogICJ3aXRoZHJhd19saXF1aWRpdHkiOiB7fQp9" } }
  */
