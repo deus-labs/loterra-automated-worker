@@ -1,6 +1,10 @@
 
 const axios = require("axios")
 
+//On eache run of script clean csv, be sure to copy data if important
+const fs = require('fs')
+fs.writeFile('records.csv', '', function(){console.log('Csv is cleaned for new run')})
+
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
     path: 'records.csv',
