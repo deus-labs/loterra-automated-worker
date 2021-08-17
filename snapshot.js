@@ -141,14 +141,18 @@ async function snapLota() {
         // This get balance of all unstaking pending to claims
         accounts.map( async (address, index) => {
             await sleep(1000*index)
-            console.log('sleep balance ',address)
 
             try {
-                let balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22claims%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
+                let bal = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22claims%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
-                balance.data.result.claims.map(claim => {
+
+                bal.data.result.claims.map(claim => {
+                    console.log(claim)
                     pending_claims.push(parseInt(claim.amount))
                 })
+                if (bal.data.result.claims.length == 0){
+                    pending_claims.push(0)
+                }
             }
             catch (e) {
                 console.log(e)
@@ -159,14 +163,11 @@ async function snapLota() {
         // This get balance of all staking account
         accounts.map( async (address, index) => {
             await sleep(1000*index)
-            console.log('sleep balance ',address)
 
             try {
                 let holder = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn/store?query_msg=%7B%22holder%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
                 staking_balances.push(parseInt(holder.data.result.balance))
-               
-                
 
             }
             catch (e) {
@@ -185,7 +186,6 @@ async function snapLota() {
 
         accounts.map( async (address, index) => {
             await sleep(1000*index)
-            console.log('sleep balance ',address)
 
             try {
                 let get_holder_lp_balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22balance%22%3A%7B%22address%22%3A%22${address}%22%7D%7D

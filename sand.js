@@ -3,6 +3,7 @@ const {
     LCDClient,
     MsgExecuteContract,
     MsgInstantiateContract,
+    MsgMigrateContract,
     MnemonicKey,
     StdFee,
     Coin,
@@ -38,7 +39,7 @@ const fees = new StdFee(500_000, { uusd: 20000000 })
 
 // ALTERED terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal
 async function sand() {
-    const msg1 = new MsgInstantiateContract( mk.accAddress, 7958,
+    const msg2 = new MsgInstantiateContract( mk.accAddress, 7958,
     {
         "name": "altered",
         "symbol": "ALTE",
@@ -56,6 +57,24 @@ async function sand() {
         "pair_address": "terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff"
     }
     , false, true)
+
+    /*const msg1 = new MsgMigrateContract(mk.accAddress, "terra102jv62g9crsy87zyfjms4lxpmkwkzlrw2n98za", 7959,
+        {
+            "name": "altered",
+            "symbol": "ALTE",
+            "decimals": 6,
+            "initial_balances": [
+                {
+                    "address": mk.accAddress,
+                    "amount": "100000000000000"
+                }
+            ],
+            "rebase": 1624294565,
+            "rebase_every": 86400,
+            "rebase_damping": 10,
+            "rebase_damping_launch": 0,
+            "pair_address": "terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff"
+        })*/
     /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra1jmr4ed6cfy7tcafaqh7ehhapq6uw2a7azfdkaw",
         //"update_terraswap_address" :{"address":""}
     {
