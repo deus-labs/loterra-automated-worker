@@ -4,6 +4,7 @@ const axios = require("axios")
 //On eache run of script clean csv, be sure to copy data if important
 const fs = require('fs')
 fs.writeFile('records.csv', '', function(){console.log('Csv is cleaned for new run')})
+fs.writeFile('luna.csv', '', function(){console.log('Luna Csv is cleaned for new run')})
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
@@ -14,6 +15,14 @@ const csvWriter = createCsvWriter({
         {id: 'pending_claims', title: 'pending_claims'},
         {id: 'staking_balances', title: 'staking_balances'},
         {id: 'lp_balances', title: 'lp_balances'}
+    ]
+});
+
+const lunaWriter = createCsvWriter({
+    path: 'luna.csv',
+    header: [
+        {id: 'address', title: 'address'},
+        {id: 'balances', title: 'balances'},
     ]
 });
 
@@ -29,7 +38,7 @@ async function snap(){
     let validatorsAddresses = validators.data.result.map(e => e.operator_address)
     let addresses = [];
     let balances = [];
-    let f = validatorsAddresses.map(async (addr) => {
+    let f = validatorsAddresses.map(async (addr,index) => {
         const delegators = await axios.get(`https://lcd.terra.dev/staking/validators/${addr}/delegations`);
         delegators.data.result.map(d => {
 
@@ -41,6 +50,8 @@ async function snap(){
             }
 
         })
+        const record = [{address: addresses[index],  balances: balances[index]}];
+        await lunaWriter.writeRecords(record)
     })
 
     let addressAndBalance = []
@@ -51,10 +62,12 @@ async function snap(){
                 bal: balances[x]
             }
             addressAndBalance.push(data)
+            
         }
         console.log(addressAndBalance)
         console.log("all staked")
         console.log(balances.reduce((a, b) => a + b, 0));
+       
     }).catch(err =>{
         console.log(err)
     })
@@ -251,7 +264,12 @@ async function snapLota() {
     }
 }
 
- snap()
-//snapLota()
+
+
+
+
+snap()
+// snapLota()
+
 
 
