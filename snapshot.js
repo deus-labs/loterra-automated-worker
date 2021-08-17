@@ -190,8 +190,8 @@ async function snapLota() {
             try {
                 let get_holder_lp_balance = await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1t4xype7nzjxrzttuwuyh9sglwaaeszr8l78u6e/store?query_msg=%7B%22balance%22%3A%7B%22address%22%3A%22${address}%22%7D%7D
             `)
-                let amount = (parseInt(get_holder_lp_balance.data.result.balance) / 1000000) * amount_of_lota_per_lp
-                lp_balances.push(amount)
+                let amount = (parseInt(get_holder_lp_balance.data.result.balance)) * amount_of_lota_per_lp
+                lp_balances.push(Math.trunc(amount))
                 //Save row to csv 
                 console.log('write csv',accounts[index])
                 const record = [{address: accounts[index],  balances: balances[index],pending_claims: pending_claims[index], staking_balances: staking_balances[index], lp_balances: lp_balances[index]}];
