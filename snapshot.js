@@ -3,10 +3,11 @@ const axios = require("axios")
 
 //On eache run of script clean csv, be sure to copy data if important
 const fs = require('fs')
+const csv = require('csv-parser');
 //fs.writeFile('records.csv', '', function(){console.log('Csv is cleaned for new run')})
-fs.writeFile('luna.csv', '', function(){console.log('Luna Csv is cleaned for new run')})
+// fs.writeFile('luna.csv', '', function(){console.log('Luna Csv is cleaned for new run')})
 
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+// const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 /*const csvWriter = createCsvWriter({
     path: 'records.csv',
     header: [
@@ -18,13 +19,13 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
     ]
 }); */
 
-const lunaWriter = createCsvWriter({
+/*const lunaWriter = createCsvWriter({
     path: 'luna.csv',
     header: [
         {id: 'address', title: 'address'},
         {id: 'balances', title: 'balances'},
     ]
-});
+});*/
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -265,12 +266,24 @@ async function snapLota() {
     }
 }
 
+function pay (){
+    let data = []
+    fs.createReadStream('records.csv')
+        .pipe(csv())
+        .on('data', (row) => {
+            data.push(row)
+            console.log(row);
+        })
+        .on('end', () => {
+            console.log('CSV file successfully processed');
+        });
+}
 
 
 
-
-snap()
-//snapLota()
+// snap()
+// snapLota()
+pay()
 
 
 

@@ -10,6 +10,7 @@
   "dependencies": {
     "@terra-money/terra.js": "^1.8.8",
     "axios": "^0.21.1",
+    "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^8.2.0",
     "fs": "^0.0.1-security"
