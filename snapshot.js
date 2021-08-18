@@ -3,11 +3,11 @@ const axios = require("axios")
 
 //On eache run of script clean csv, be sure to copy data if important
 const fs = require('fs')
-fs.writeFile('records.csv', '', function(){console.log('Csv is cleaned for new run')})
+//fs.writeFile('records.csv', '', function(){console.log('Csv is cleaned for new run')})
 fs.writeFile('luna.csv', '', function(){console.log('Luna Csv is cleaned for new run')})
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const csvWriter = createCsvWriter({
+/*const csvWriter = createCsvWriter({
     path: 'records.csv',
     header: [
         {id: 'address', title: 'address'},
@@ -16,7 +16,7 @@ const csvWriter = createCsvWriter({
         {id: 'staking_balances', title: 'staking_balances'},
         {id: 'lp_balances', title: 'lp_balances'}
     ]
-});
+}); */
 
 const lunaWriter = createCsvWriter({
     path: 'luna.csv',
@@ -270,7 +270,7 @@ async function snapLota() {
 
 
 snap()
-// snapLota()
+//snapLota()
 
 
 

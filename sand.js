@@ -21,8 +21,8 @@ const mk = new MnemonicKey({
     "fcd": "https://bombay-fcd.terra.dev"
 }*/
 const terra = new LCDClient({
-    URL: "https://tequila-lcd.terra.dev",
-    chainID: "tequila-0004",
+    URL: "https://lcd.terra.dev/",
+    chainID: "columbus-4",
 })
 /*
 const terra = new LCDClient({
@@ -39,7 +39,7 @@ const fees = new StdFee(500_000, { uusd: 20000000 })
 
 // ALTERED terra19xvyr7c7j8pnp5r96ymcxnv26a4rgfz0xjjcal
 async function sand() {
-    const msg2 = new MsgInstantiateContract( mk.accAddress, 7960,
+    /*const msg1 = new MsgInstantiateContract( mk.accAddress, 297,
     {
         "name": "altered",
         "symbol": "ALTE",
@@ -50,15 +50,15 @@ async function sand() {
             "amount": "100000000000000"
         }
     ],
-        "rebase": 1624294565,
+        "rebase": 1629288000,
         "rebase_every": 86400,
         "rebase_damping": 10,
-        "rebase_damping_launch": 0,
+        "rebase_damping_launch": 1631707200,
         "pair_address": "terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff"
     }
-    , false, true)
+    , false, true) */
 
-    const msg1 = new MsgMigrateContract(mk.accAddress, "terra102jv62g9crsy87zyfjms4lxpmkwkzlrw2n98za", 7960,
+    /*const msg1 = new MsgMigrateContract(mk.accAddress, "terra102jv62g9crsy87zyfjms4lxpmkwkzlrw2n98za", 7960,
         {
             "name": "altered",
             "symbol": "ALTE",
@@ -69,12 +69,13 @@ async function sand() {
                     "amount": "100000000000000"
                 }
             ],
-            "rebase": 1624294565,
+            "rebase": 1629288000,
             "rebase_every": 86400,
             "rebase_damping": 10,
-            "rebase_damping_launch": 0,
+            "rebase_damping_launch": 1631708371,
             "pair_address": "terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff"
-        })
+        })*/
+
     /*const msg1 = new MsgExecuteContract(mk.accAddress, "terra1jmr4ed6cfy7tcafaqh7ehhapq6uw2a7azfdkaw",
         //"update_terraswap_address" :{"address":""}
     {
@@ -90,7 +91,7 @@ async function sand() {
                     {
                         "info" : {
                             "token": {
-                                "contract_addr": "terra10ua5mu4yn28t0rsr6u7awnml0t6cnt89qp6tdp"
+                                "contract_addr": "terra15tztd7v9cmv0rhyh37g843j8vfuzp8kw0k5lqv"
                             }
                         },
                         "amount": "100000000000000"
@@ -114,7 +115,7 @@ async function sand() {
                 {
                     "info" : {
                         "token": {
-                            "contract_addr": "terra1les6rz5ktjf44lcv35tl0a3a9rvkux9gdlzces"
+                            "contract_addr": "terra1ke2gz90rykm52t06grkjzxaed2ngz73d65nev2"
                         }
                     },
                     "amount": "40000000000000"
