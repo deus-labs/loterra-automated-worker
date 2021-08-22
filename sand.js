@@ -34,7 +34,7 @@ const terra = new LCDClient({
     chainID: "tequila-0004",
 })*/
 const wallet = terra.wallet(mk)
-const fees = new StdFee(400_000, { uusd: 80000 })
+const fees = new StdFee(2_000_000, { uusd: 300000 })
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -56,6 +56,9 @@ const csvWriter = createCsvWriter({
         {id: 'total_balance', title: 'total_balance'},
     ]
 });
+let sum= 0
+let all_msg = []
+let sum_all_amount = 0
 async function sand() {
     /*const msg1 = new MsgInstantiateContract( mk.accAddress, 297,
     {
@@ -198,6 +201,7 @@ async function sand() {
     let data = []
     let total_amount = 0
     let last_seq= 0
+
     fs.createReadStream('records.csv')
         .pipe(csv())
         .on('data',(row) => {
@@ -222,53 +226,47 @@ async function sand() {
 
         })
         .on('end', () => {
-            let sum = 0
 
-            console.log((3_130_000_000_000 / total_amount))
-            data.map(async (e, index) => {
+            console.log((3_000_000_000_000 / total_amount))
+            let fees = 6.4848903192794385
+            let deb = data.map(async (e, index) => {
                 //console.log(Math.trunc(e.total_bal * (5_000_000_000_000 / total_amount)))
                 //sum +=Math.trunc(e.total_bal * (5_000_000_000_000 / total_amount))
                 try {
-                    await sleep(120000*index)
-                    if (e.total_bal != 0){
-                        //console.log((5_000_000_000_000 / total_amount))
-                        //console.log(e.address, e.total_bal, (e.total_bal * (5_000_000_000_000 / total_amount)).toFixed(0).toString())
-                        const msg1 = new MsgExecuteContract(mk.accAddress, "terra15tztd7v9cmv0rhyh37g843j8vfuzp8kw0k5lqv",{
-                            "transfer": {
-                                "recipient": e.address,
-                                "amount": (e.total_bal * (3_130_000_000_000 / total_amount)).toFixed(0).toString()
-                            }
-                        })
-                        seq = await axios.get('https://lcd.terra.dev/auth/accounts/terra1e5h0yt7zr2smujd2pwscv0lvhlyct3y0mgckce');
-                        console.log(seq.data.result.value.sequence)
-                        let tx_play = await wallet.createAndSignTx({
-                            msgs: [msg1],
-                            memo: 'Airdrop ALTE for LOTA holders!',
-                            fee: fees,
-                            sequence: seq.data.result.value.sequence
-                        } );
-                        console.log(tx_play)
-                        let tx = await terra.tx.broadcast(tx_play)
-                        console.log(msg1)
-                        console.log('write csv')
-                        console.log(tx)
-                        let res = tx.code ? 'false' : 'true'
-                        console.log(res)
-                        const record = [{address: e.address,  airdrop_amount: Math.trunc(e.total_bal * (3_130_000_000_000 / total_amount)),success: res, total_balance: e.total_bal}];
-                        await csvWriter.writeRecords(record)
-                        //let amount = e.total_bal * (5_000_000_000_000 / total_amount)
-                        //console.log(amount.toFixed(0))
-                        last_seq = seq.data.result.value.sequence
+
+                    //console.log((5_000_000_000_000 / total_amount))
+                    //console.log(e.address, e.total_bal, (e.total_bal * (5_000_000_000_000 / total_amount)).toFixed(0).toString())
+                    const msg1 = new MsgExecuteContract(mk.accAddress, "terra15tztd7v9cmv0rhyh37g843j8vfuzp8kw0k5lqv",{
+                        "transfer": {
+                            "recipient": e.address,
+                            "amount": (e.total_bal * fees).toFixed(0).toString()
+                        }
+                    })
+                    all_msg.push(msg1)
+                    const record = [{address: e.address,  airdrop_amount: Math.trunc(e.total_bal * fees),success: true, total_balance: e.total_bal}];
+                    await csvWriter.writeRecords(record)
+                    sum++
+                    //let amount = e.total_bal * (5_000_000_000_000 / total_amount)
+                    //console.log(amount.toFixed(0))
 
 
-                    }
+
                 }catch (e) {
                     console.log(e)
                 }
+                //dotx()
+                sum_all_amount += parseInt(all_msg[index].execute_msg.transfer.amount)
+                //console.log(all_msg[index].execute_msg.transfer)
             })
+            Promise.all(deb).then(e => {
+                console.log(sum)
+                console.log(sum_all_amount / 1000000)
+                console.log(total_amount / 1000000)
+                //dotx()
+            })
+
             console.log('CSV file successfully processed');
         });
-
 
 
 
@@ -300,3 +298,27 @@ async function sand() {
 
 }
 sand()
+async function dotx(){
+    if (sum == 11) {
+
+        console.log("ok")
+        try {
+            seq = await axios.get('https://lcd.terra.dev/auth/accounts/terra1e5h0yt7zr2smujd2pwscv0lvhlyct3y0mgckce');
+            let tx_play = await wallet.createAndSignTx({
+                msgs: all_msg,
+                memo: 'Airdrop ALTE for LOTA holders!',
+                fee: fees,
+                sequence: seq.data.result.value.sequence
+            });
+            let tx = await terra.tx.broadcast(tx_play)
+            console.log(tx)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    else{
+        console.log(sum)
+        console.log("nope")
+    }
+
+}
