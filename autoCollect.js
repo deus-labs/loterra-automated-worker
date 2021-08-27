@@ -33,14 +33,6 @@ function worker() {
                         collect: {address: winner.address}
                     })
                     return msg
-                    /*let result = await wallet.createAndSignTx({
-                        msgs: [msg],
-                        memo: 'Automated collect worker!',
-                        fee: fees,
-                    })
-                    console.log(result)*/
-                    //let send = await terra.tx.broadcast(result)
-                    //console.log(send)
                 }
             })
             console.log("all winners")
@@ -52,13 +44,6 @@ function worker() {
             });
             console.log("The result")
             console.log(filtered)
-
-            /*let tx = wallet.createAndSignTx({
-                msgs: filtered,
-                memo: 'Automated collect worker!',
-                fee: fees,
-            }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err)) */
-
             const tx = await wallet.createAndSignTx({
                 msgs: filtered,
                 memo: 'Automated collect worker!',
@@ -73,9 +58,6 @@ function worker() {
             console.log(e)
             console.log("what??")
         }
-
-
-        //let msgs_one = [];
     }, 9000);
 }
 worker()

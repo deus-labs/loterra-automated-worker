@@ -35,7 +35,6 @@ function worker() {
         }
 
         try {
-
             let res = await terra.wasm.contractQuery(
                 process.env.LOTERRA_CONTRACT,
                 {
@@ -66,7 +65,6 @@ function worker() {
         } catch (e) {
             console.log(e)
         }
-
     }, 60000);
 }
 worker()
