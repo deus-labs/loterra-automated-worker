@@ -17,8 +17,8 @@ const terra = new LCDClient({
 })
 const wallet = terra.wallet(mk)
 const fees = new StdFee(700_000, { uusd: 106000 })
-function worker() {
 
+function worker() {
     setInterval(async function () {
         try {
             const config = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22config%22%3A%7B%7D%7D`);
@@ -33,14 +33,6 @@ function worker() {
                         collect: {address: winner.address}
                     })
                     return msg
-                    /*let result = await wallet.createAndSignTx({
-                        msgs: [msg],
-                        memo: 'Automated collect worker!',
-                        fee: fees,
-                    })
-                    console.log(result)*/
-                    //let send = await terra.tx.broadcast(result)
-                    //console.log(send)
                 }
             })
             console.log("all winners")
@@ -52,12 +44,6 @@ function worker() {
             });
             console.log("The result")
             console.log(filtered)
-
-            /*let tx = wallet.createAndSignTx({
-                msgs: filtered,
-                memo: 'Automated collect worker!',
-                fee: fees,
-            }).then(result => terra.tx.broadcast(result)).catch(err => console.log(err)) */
 
             const tx = await wallet.createAndSignTx({
                 msgs: filtered,
@@ -73,9 +59,6 @@ function worker() {
             console.log(e)
             console.log("what??")
         }
-
-
-        //let msgs_one = [];
     }, 9000);
 }
 worker()
