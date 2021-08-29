@@ -22,10 +22,14 @@ function worker() {
     setInterval(async function () {
         try {
             const config = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22config%22%3A%7B%7D%7D`);
+            // this query returns winners of a round
             const getWinners = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22winner%22%3A%7B%22lottery_id%22%3A${config.data.result.lottery_counter - 1}%7D%7D`)
             let winners = getWinners.data.result.winners
             console.log(winners)
 
+            // filter out claimed winners
+            // TODO: discard msg creation here only filter unclaimed, we will make this a batch msgs in a single tx
+            // there should be something like filter_map() in ts that would work here
             let winners_res = winners.map(async winner => {
                 if (winner.claims.claimed == false) {
                     console.log(winner.address)
@@ -37,6 +41,8 @@ function worker() {
             })
             console.log("all winners")
             console.log(winners_res)
+
+            // TODO: delete below lines, filter will be done in the above code.
             let result = await Promise.all(winners_res)
 
             var filtered = result.filter(function (el) {
@@ -45,6 +51,10 @@ function worker() {
             console.log("The result")
             console.log(filtered)
 
+            // TODO: collect msgs into an array
+            // Put array at msgs field. This will make the tx work batch.
+            // Also lower gas adjustment to 1.25
+            // If you want you can implement better logging
             const tx = await wallet.createAndSignTx({
                 msgs: filtered,
                 memo: 'Automated collect worker!',
