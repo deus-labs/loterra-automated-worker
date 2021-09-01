@@ -8,8 +8,7 @@ const {
 const axios = require("axios");
 
 const mk = new MnemonicKey({
-    mnemonic:
-    process.env.MNEMONIC,
+    mnemonic: process.env.MNEMONIC,
 });
 const terra = new LCDClient({
     URL: process.env.LCD_URL,
@@ -25,41 +24,30 @@ function worker() {
             // this query returns winners of a round
             const getWinners = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22winner%22%3A%7B%22lottery_id%22%3A${config.data.result.lottery_counter - 1}%7D%7D`)
             let winners = getWinners.data.result.winners
-            console.log(winners)
 
             // filter out claimed winners
-            // TODO: discard msg creation here only filter unclaimed, we will make this a batch msgs in a single tx
-            // there should be something like filter_map() in ts that would work here
-            let winners_res = winners.map(async winner => {
-                if (winner.claims.claimed == false) {
-                    console.log(winner.address)
-                    let msg = new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
-                        collect: {address: winner.address}
-                    })
-                    return msg
-                }
-            })
+            let winnerAddrList = winners.filter(w => !w.claims.claimed).map(w => w.address)
             console.log("all winners")
-            console.log(winners_res)
-
-            // TODO: delete below lines, filter will be done in the above code.
-            let result = await Promise.all(winners_res)
-
-            var filtered = result.filter(function (el) {
-                return el != null;
-            });
-            console.log("The result")
-            console.log(filtered)
+            console.log(winnerAddrList)
 
             // TODO: collect msgs into an array
             // Put array at msgs field. This will make the tx work batch.
             // Also lower gas adjustment to 1.25
             // If you want you can implement better logging
+
+            let msgs = winnerAddrList.map(w => new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
+                collect: { address: w.address }
+            }))
+
+            // TODO: 
+            // 1 - Contact 0xantz for testing environment
+            // 2 - setup scheduled job instead of cron
+            // 3 - If necessary limit amount of execute contract in single broadcast, or try increasing gas adjustment
             const tx = await wallet.createAndSignTx({
-                msgs: filtered,
+                msgs: msgs,
                 memo: 'Automated collect worker!',
                 gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.5,
+                gasAdjustment: 1.25,
                 fee: fees
             })
             const broadcast = await terra.tx.broadcast(tx)
@@ -67,7 +55,6 @@ function worker() {
 
         } catch (e) {
             console.log(e)
-            console.log("what??")
         }
     }, 9000);
 }
