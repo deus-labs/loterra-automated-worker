@@ -20,6 +20,7 @@ const fees = new StdFee(700_000, { uusd: 106000 })
 const scheduler = require('node-schedule');
 // run x minutes after next draw time
 const offsetMins = 5;
+
 function scheduleNextRun(nextDrawTime) {
     var nextRunDate = new Date((nextDrawTime + offsetMins * 60) * 1000)
     const job = scheduler.scheduleJob(nextRunDate, () => worker())
@@ -27,18 +28,16 @@ function scheduleNextRun(nextDrawTime) {
 }
 
 async function worker() {
+    let nextDrawTime = 0
     try {
         const config = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22config%22%3A%7B%7D%7D`);
+        nextDrawTime = config.data.result.block_time_play
         // this query returns winners of a round
         const getWinners = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22winner%22%3A%7B%22lottery_id%22%3A${config.data.result.lottery_counter - 1}%7D%7D`)
         let winners = getWinners.data.result.winners
 
         // filter out claimed winners
         let winnerAddrList = winners.filter(w => !w.claims.claimed).map(w => w.address)
-        if (!winnerAddrList.length) {
-            scheduleNextRun(config.data.result.block_time_play)
-            return
-        }
 
         console.log("all winners")
         console.log(winnerAddrList)
@@ -59,10 +58,9 @@ async function worker() {
         })
         const broadcast = await terra.tx.broadcast(tx)
         console.log(broadcast)
-
-        scheduleNextRun(config.data.result.block_time_play)
     } catch (e) {
         console.log(e)
     }
+    scheduleNextRun(nextDrawTime)
 }
 worker()
