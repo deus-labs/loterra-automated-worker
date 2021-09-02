@@ -17,45 +17,52 @@ const terra = new LCDClient({
 const wallet = terra.wallet(mk)
 const fees = new StdFee(700_000, { uusd: 106000 })
 
-function worker() {
-    setInterval(async function () {
-        try {
-            const config = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22config%22%3A%7B%7D%7D`);
-            // this query returns winners of a round
-            const getWinners = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22winner%22%3A%7B%22lottery_id%22%3A${config.data.result.lottery_counter - 1}%7D%7D`)
-            let winners = getWinners.data.result.winners
+const scheduler = require('node-schedule');
+// run x minutes after next draw time
+const offsetMins = 5;
+function scheduleNextRun(nextDrawTime) {
+    var nextRunDate = new Date((nextDrawTime + offsetMins * 60) * 1000)
+    const job = scheduler.scheduleJob(nextRunDate, () => worker())
+    console.log('next run: ' + job.nextInvocation())
+}
 
-            // filter out claimed winners
-            let winnerAddrList = winners.filter(w => !w.claims.claimed).map(w => w.address)
-            console.log("all winners")
-            console.log(winnerAddrList)
+async function worker() {
+    try {
+        const config = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22config%22%3A%7B%7D%7D`);
+        // this query returns winners of a round
+        const getWinners = await axios.get(`https://lcd.terra.dev/wasm/contracts/${process.env.LOTERRA_CONTRACT}/store?query_msg=%7B%22winner%22%3A%7B%22lottery_id%22%3A${config.data.result.lottery_counter - 1}%7D%7D`)
+        let winners = getWinners.data.result.winners
 
-            // TODO: collect msgs into an array
-            // Put array at msgs field. This will make the tx work batch.
-            // Also lower gas adjustment to 1.25
-            // If you want you can implement better logging
-
-            let msgs = winnerAddrList.map(w => new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
-                collect: { address: w.address }
-            }))
-
-            // TODO: 
-            // 1 - Contact 0xantz for testing environment
-            // 2 - setup scheduled job instead of cron
-            // 3 - If necessary limit amount of execute contract in single broadcast, or try increasing gas adjustment
-            const tx = await wallet.createAndSignTx({
-                msgs: msgs,
-                memo: 'Automated collect worker!',
-                gasPrices: fees.gasPrices(),
-                gasAdjustment: 1.25,
-                fee: fees
-            })
-            const broadcast = await terra.tx.broadcast(tx)
-            console.log(broadcast)
-
-        } catch (e) {
-            console.log(e)
+        // filter out claimed winners
+        let winnerAddrList = winners.filter(w => !w.claims.claimed).map(w => w.address)
+        if (!winnerAddrList.length) {
+            scheduleNextRun(config.data.result.block_time_play)
+            return
         }
-    }, 9000);
+
+        console.log("all winners")
+        console.log(winnerAddrList)
+
+        let msgs = winnerAddrList.map(w => new MsgExecuteContract(mk.accAddress, process.env.LOTERRA_CONTRACT, {
+            collect: { address: w.address }
+        }))
+
+        // TODO: 
+        // 1 - Contact 0xantz for testing environment
+        // 2 - If necessary limit amount of execute contract in single broadcast, or try increasing gas adjustment
+        const tx = await wallet.createAndSignTx({
+            msgs: msgs,
+            memo: 'Automated collect worker!',
+            gasPrices: fees.gasPrices(),
+            gasAdjustment: 1.25,
+            fee: fees
+        })
+        const broadcast = await terra.tx.broadcast(tx)
+        console.log(broadcast)
+
+        scheduleNextRun(config.data.result.block_time_play)
+    } catch (e) {
+        console.log(e)
+    }
 }
 worker()
